@@ -1,0 +1,19 @@
+import jwt from 'jsonwebtoken';
+
+const 
+
+export default function auth(req, res, next) {
+    const authHeader = req.headers.authorization || '';
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+    if (!token) {
+        return res.status(401).json({ code: 401, message: 'Token manquant' });
+    }
+
+    try {
+        req.user = jwt.verify(token, process.env.JWT_SECRET);
+        next();
+    } catch (err) {
+        res.status(401).json({ code: 401, message: 'Token invalide ou expiré' });
+    }
+}
